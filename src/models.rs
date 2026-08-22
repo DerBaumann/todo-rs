@@ -189,4 +189,14 @@ mod json_data {
 
         Ok(())
     }
+
+    #[test]
+    fn complete_existing_todo() {
+        todo!()
+    }
+
+    #[test]
+    fn complete_nonexisting_todo() {
+        todo!()
+    }
 }
