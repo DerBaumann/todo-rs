@@ -8,7 +8,7 @@ pub enum TodoError {
     TitleInvalidLength(usize),
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Todo {
     pub id: u32,
     pub title: String,
@@ -61,8 +61,12 @@ impl JsonData {
         Some(todo)
     }
 
-    pub fn delete_todo(&mut self, id: u32) -> Option<&Todo> {
-        todo!()
+    pub fn delete_todo(&mut self, id: u32) -> Option<Todo> {
+        let todo = self.find_todo_by_id(id)?.clone();
+
+        self.todos.retain(|t| t.id != id);
+
+        Some(todo)
     }
 }
 
@@ -145,10 +149,6 @@ mod todo_tests {
 
 #[cfg(test)]
 mod json_data {
-    use std::process::id;
-
-    use anyhow::Ok;
-
     use super::*;
 
     #[test]
