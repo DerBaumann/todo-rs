@@ -55,6 +55,10 @@ impl JsonData {
 
         Ok(self.todos.push_mut(Todo::try_new(id, title, false)?))
     }
+
+    pub fn complete_todo(&mut self, id: u32) -> Option<&Todo> {
+        todo!()
+    }
 }
 
 #[cfg(test)]
