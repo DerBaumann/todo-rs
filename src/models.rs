@@ -57,7 +57,9 @@ impl JsonData {
     }
 
     pub fn complete_todo(&mut self, id: u32) -> Option<&Todo> {
-        todo!()
+        let todo = self.todos.iter_mut().find(|t| t.id == id)?;
+        todo.completed = true;
+        Some(todo)
     }
 }
 
