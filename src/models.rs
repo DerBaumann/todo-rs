@@ -140,6 +140,8 @@ mod todo_tests {
 
 #[cfg(test)]
 mod json_data {
+    use anyhow::Ok;
+
     use super::*;
 
     #[test]
@@ -191,12 +193,27 @@ mod json_data {
     }
 
     #[test]
-    fn complete_existing_todo() {
-        todo!()
+    fn complete_existing_todo() -> anyhow::Result<()> {
+        let mut data = JsonData::default();
+
+        let id = {
+            let todo = data.add_todo("Cook lunch".to_string())?;
+            todo.id
+        };
+
+        let todo = data.complete_todo(id);
+
+        assert!(todo.is_some());
+
+        let todo = todo.unwrap();
+
+        assert!(todo.completed);
+
+        Ok(())
     }
 
     #[test]
-    fn complete_nonexisting_todo() {
+    fn complete_nonexisting_todo() -> anyhow::Result<()> {
         todo!()
     }
 }
