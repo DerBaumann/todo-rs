@@ -67,6 +67,20 @@ impl JsonData {
 
         Some(todo)
     }
+
+    // TODO: Maybe make this return Result<&Todo, JsonDataError> with
+    // enum JsonDataError {
+    //   TodoNotFound(u32),
+    //   TodoError(TodoError)
+    // }
+    pub fn edit_todo(
+        &mut self,
+        id: u32,
+        title: Option<String>,
+        completed: Option<bool>,
+    ) -> Result<Option<Todo>, TodoError> {
+        todo!()
+    }
 }
 
 #[cfg(test)]
