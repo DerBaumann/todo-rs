@@ -44,7 +44,6 @@ pub struct JsonData {
 
 // TODO: edit
 // TODO: delete
-// TODO: complete
 impl JsonData {
     pub fn find_todo_by_id(&self, id: u32) -> Option<&Todo> {
         self.todos.iter().find(|t| t.id == id)
@@ -60,6 +59,10 @@ impl JsonData {
         let todo = self.todos.iter_mut().find(|t| t.id == id)?;
         todo.completed = true;
         Some(todo)
+    }
+
+    pub fn delete_todo(&mut self, id: u32) -> Option<&Todo> {
+        todo!()
     }
 }
 
@@ -219,5 +222,15 @@ mod json_data {
         let mut data = JsonData::default();
 
         assert_eq!(data.complete_todo(420), None);
+    }
+
+    #[test]
+    fn delete_existing_todo() -> anyhow::Result<()> {
+        todo!()
+    }
+
+    #[test]
+    fn delete_nonexisting_todo() {
+        todo!()
     }
 }
