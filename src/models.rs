@@ -145,6 +145,8 @@ mod todo_tests {
 
 #[cfg(test)]
 mod json_data {
+    use std::process::id;
+
     use anyhow::Ok;
 
     use super::*;
@@ -201,10 +203,7 @@ mod json_data {
     fn complete_existing_todo() -> anyhow::Result<()> {
         let mut data = JsonData::default();
 
-        let id = {
-            let todo = data.add_todo("Cook lunch".to_string())?;
-            todo.id
-        };
+        let id = data.add_todo("Cook lunch".to_string())?.id;
 
         let todo = data.complete_todo(id);
 
@@ -226,11 +225,27 @@ mod json_data {
 
     #[test]
     fn delete_existing_todo() -> anyhow::Result<()> {
-        todo!()
+        let mut data = JsonData::default();
+        data.add_todo("Cook lunch".to_string())?;
+        let id = data.add_todo("Write tests".to_string())?.id;
+
+        let id = data.delete_todo(id).map(|t| t.id);
+
+        assert!(id.is_some());
+
+        let id = id.unwrap();
+
+        assert!(data.find_todo_by_id(id).is_none());
+        assert_eq!(data.todos.len(), 1);
+
+        Ok(())
     }
 
     #[test]
     fn delete_nonexisting_todo() {
-        todo!()
+        let mut data = JsonData::default();
+        assert_eq!(data.todos.len(), 0);
+        assert_eq!(data.delete_todo(420), None);
+        assert_eq!(data.todos.len(), 0);
     }
 }
