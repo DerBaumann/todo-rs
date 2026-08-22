@@ -213,7 +213,9 @@ mod json_data {
     }
 
     #[test]
-    fn complete_nonexisting_todo() -> anyhow::Result<()> {
-        todo!()
+    fn complete_nonexisting_todo() {
+        let mut data = JsonData::default();
+
+        assert_eq!(data.complete_todo(420), None);
     }
 }
