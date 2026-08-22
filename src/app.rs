@@ -84,7 +84,11 @@ impl App {
     }
 
     pub fn delete(&mut self, id: u32) -> Result<()> {
-        self.store.data.todos.retain(|t| t.id != id);
+        self.store
+            .data
+            .delete_todo(id)
+            .ok_or(AppError::TodoNotFound)?;
+
         self.store.write()?;
 
         println!("Todo deleted successfully!");
