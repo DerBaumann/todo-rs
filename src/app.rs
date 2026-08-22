@@ -72,15 +72,10 @@ impl App {
     }
 
     pub fn complete(&mut self, id: u32) -> Result<()> {
-        let todo = self
-            .store
+        self.store
             .data
-            .todos
-            .iter_mut()
-            .find(|t| t.id == id)
+            .complete_todo(id)
             .ok_or(AppError::TodoNotFound)?;
-
-        todo.completed = true;
 
         self.store.write()?;
         println!("Todo completed successfully!");
