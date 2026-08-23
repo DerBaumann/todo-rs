@@ -37,6 +37,14 @@ impl Display for Todo {
     }
 }
 
+#[derive(Debug, thiserror::Error)]
+pub enum JsonDataError {
+    #[error("todo does not exist")]
+    TodoNotFound(u32),
+    #[error(transparent)]
+    TodoError(#[from] TodoError),
+}
+
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct JsonData {
     pub todos: Vec<Todo>,
@@ -68,17 +76,12 @@ impl JsonData {
         Some(todo)
     }
 
-    // TODO: Maybe make this return Result<&Todo, JsonDataError> with
-    // enum JsonDataError {
-    //   TodoNotFound(u32),
-    //   TodoError(TodoError)
-    // }
     pub fn edit_todo(
         &mut self,
         id: u32,
         title: Option<String>,
         completed: Option<bool>,
-    ) -> Result<Option<Todo>, TodoError> {
+    ) -> Result<&Todo, JsonDataError> {
         todo!()
     }
 }
