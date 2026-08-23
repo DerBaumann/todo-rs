@@ -82,7 +82,19 @@ impl JsonData {
         title: Option<String>,
         completed: Option<bool>,
     ) -> Result<&Todo, JsonDataError> {
-        todo!()
+        let todo = self
+            .todos
+            .iter_mut()
+            .find(|t| t.id == id)
+            .ok_or(JsonDataError::TodoNotFound(id))?;
+
+        *todo = Todo::try_new(
+            id,
+            title.unwrap_or_else(|| todo.title.clone()),
+            completed.unwrap_or(todo.completed),
+        )?;
+
+        Ok(todo)
     }
 }
 
