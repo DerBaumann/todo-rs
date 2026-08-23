@@ -1,5 +1,5 @@
 use crate::{
-    models::TodoError,
+    models::{JsonDataError, TodoError},
     store::{JsonStore, JsonStoreError},
 };
 
@@ -11,6 +11,8 @@ pub enum AppError {
     TodoNotFound,
     #[error(transparent)]
     TodoError(#[from] TodoError),
+    #[error(transparent)]
+    JsonDataError(#[from] JsonDataError),
 }
 
 type Result<T> = std::result::Result<T, AppError>;
@@ -54,16 +56,7 @@ impl App {
     }
 
     pub fn edit(&mut self, id: u32, title: Option<String>, completed: Option<bool>) -> Result<()> {
-        let todo = self
-            .store
-            .data
-            .todos
-            .iter_mut()
-            .find(|t| t.id == id)
-            .ok_or(AppError::TodoNotFound)?;
-
-        todo.title = title.unwrap_or_else(|| todo.title.to_owned());
-        todo.completed = completed.unwrap_or(todo.completed);
+        self.store.data.edit_todo(id, title, completed)?;
 
         self.store.write()?;
         println!("Todo updated successfully!");

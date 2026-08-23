@@ -50,7 +50,6 @@ pub struct JsonData {
     pub todos: Vec<Todo>,
 }
 
-// TODO: edit
 impl JsonData {
     pub fn find_todo_by_id(&self, id: u32) -> Option<&Todo> {
         self.todos.iter().find(|t| t.id == id)
