@@ -1,3 +1,5 @@
+use std::io;
+
 use crate::{
     models::{JsonDataError, TodoError},
     store::{JsonStore, JsonStoreError},
@@ -13,17 +15,20 @@ pub enum AppError {
     TodoError(#[from] TodoError),
     #[error(transparent)]
     JsonDataError(#[from] JsonDataError),
+    #[error(transparent)]
+    IOError(#[from] io::Error),
 }
 
 type Result<T> = std::result::Result<T, AppError>;
 
 pub struct App {
     store: JsonStore,
+    writer: Box<dyn io::Write>,
 }
 
 impl App {
-    pub fn new(store: JsonStore) -> Self {
-        Self { store }
+    pub fn new(store: JsonStore, writer: Box<dyn io::Write>) -> Self {
+        Self { store, writer }
     }
 
     pub fn list(&self) -> Result<()> {
@@ -34,14 +39,14 @@ impl App {
         Ok(())
     }
 
-    pub fn get(&self, id: u32) -> Result<()> {
+    pub fn get(&mut self, id: u32) -> Result<()> {
         let todo = self
             .store
             .data
             .find_todo_by_id(id)
             .ok_or(AppError::TodoNotFound)?;
 
-        println!("{todo}");
+        writeln!(self.writer, "{todo}")?;
 
         Ok(())
     }

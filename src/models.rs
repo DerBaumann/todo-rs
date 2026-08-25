@@ -8,6 +8,7 @@ pub enum TodoError {
     TitleInvalidLength(usize),
 }
 
+// TODO: Ask what is meant by Entity
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Todo {
     pub id: u32,

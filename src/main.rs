@@ -1,3 +1,5 @@
+use std::io;
+
 use clap::Parser;
 use todo_rs::{
     app::App,
@@ -8,7 +10,7 @@ use todo_rs::{
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
-    let mut app = App::new(JsonStore::read(cli.store_path)?);
+    let mut app = App::new(JsonStore::read(cli.store_path)?, Box::new(io::stdout()));
 
     match cli.command {
         Command::List => app.list()?,
