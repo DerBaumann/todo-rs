@@ -11,13 +11,27 @@ pub enum JsonStoreError {
     JsonError(#[from] serde_json::Error),
 }
 
+pub trait DataStore {
+    type Error;
+
+    fn read(path: PathBuf) -> Result<Self, Self::Error>
+    where
+        Self: std::marker::Sized;
+    fn write(&self) -> Result<(), Self::Error>;
+}
+
 pub struct JsonStore {
     pub store_path: PathBuf,
     pub data: JsonData,
 }
 
-impl JsonStore {
-    pub fn read(path: PathBuf) -> Result<Self, JsonStoreError> {
+impl DataStore for JsonStore {
+    type Error = JsonStoreError;
+
+    fn read(path: PathBuf) -> Result<Self, Self::Error>
+    where
+        Self: std::marker::Sized,
+    {
         let contents = fs::read_to_string(&path).or_else(|e| match e.kind() {
             std::io::ErrorKind::NotFound => {
                 let empty = JsonData::default();
@@ -34,7 +48,7 @@ impl JsonStore {
         })
     }
 
-    pub fn write(&self) -> Result<(), JsonStoreError> {
+    fn write(&self) -> Result<(), Self::Error> {
         let contents = serde_json::to_string_pretty(&self.data)?;
         fs::write(&self.store_path, contents)?;
         Ok(())
