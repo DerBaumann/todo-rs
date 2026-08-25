@@ -10,7 +10,7 @@ use todo_rs::{
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
-    let mut app = App::new(JsonStore::read(cli.store_path)?, Box::new(io::stdout()));
+    let mut app = App::new(JsonStore::read(cli.store_path)?, io::stdout());
 
     match cli.command {
         Command::List => app.list()?,

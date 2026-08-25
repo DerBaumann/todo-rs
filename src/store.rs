@@ -11,8 +11,13 @@ pub enum JsonStoreError {
     JsonError(#[from] serde_json::Error),
 }
 
+#[mockall::automock(type Data=JsonData; type Error=JsonStoreError;)]
 pub trait DataStore {
+    type Data;
     type Error;
+
+    fn data(&self) -> &Self::Data;
+    fn data_mut(&mut self) -> &mut Self::Data;
 
     fn read(path: PathBuf) -> Result<Self, Self::Error>
     where
@@ -26,7 +31,16 @@ pub struct JsonStore {
 }
 
 impl DataStore for JsonStore {
+    type Data = JsonData;
     type Error = JsonStoreError;
+
+    fn data(&self) -> &Self::Data {
+        &self.data
+    }
+
+    fn data_mut(&mut self) -> &mut Self::Data {
+        &mut self.data
+    }
 
     fn read(path: PathBuf) -> Result<Self, Self::Error>
     where
