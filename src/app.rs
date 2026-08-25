@@ -31,9 +31,9 @@ impl App {
         Self { store, writer }
     }
 
-    pub fn list(&self) -> Result<()> {
+    pub fn list(&mut self) -> Result<()> {
         for todo in &self.store.data.todos {
-            println!("{todo}");
+            writeln!(self.writer, "{todo}")?;
         }
 
         Ok(())
@@ -55,7 +55,7 @@ impl App {
         self.store.data.add_todo(title.clone())?;
 
         self.store.write()?;
-        println!("Saved todo: {}!", title);
+        writeln!(self.writer, "Saved todo: {}!", title)?;
 
         Ok(())
     }
@@ -64,7 +64,7 @@ impl App {
         self.store.data.edit_todo(id, title, completed)?;
 
         self.store.write()?;
-        println!("Todo updated successfully!");
+        writeln!(self.writer, "Todo updated successfully!")?;
 
         Ok(())
     }
@@ -76,7 +76,7 @@ impl App {
             .ok_or(AppError::TodoNotFound)?;
 
         self.store.write()?;
-        println!("Todo completed successfully!");
+        writeln!(self.writer, "Todo completed successfully!")?;
 
         Ok(())
     }
@@ -89,7 +89,7 @@ impl App {
 
         self.store.write()?;
 
-        println!("Todo deleted successfully!");
+        writeln!(self.writer, "Todo deleted successfully!")?;
 
         Ok(())
     }
