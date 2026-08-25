@@ -177,7 +177,6 @@ mod todo_tests {
 #[cfg(test)]
 mod json_data {
     use super::*;
-    use core::assert_matches;
 
     #[test]
     fn add_todo_auto_increments_id() -> anyhow::Result<()> {
@@ -372,10 +371,10 @@ mod json_data {
     fn edit_todo_nonexisting_todo_returns_correct_id() {
         let mut data = JsonData::default();
 
-        assert_matches!(
+        assert!(matches!(
             data.edit_todo(420, None, None),
             Err(JsonDataError::TodoNotFound(420))
-        );
+        ));
     }
 
     #[test]
