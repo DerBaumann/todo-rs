@@ -1,5 +1,10 @@
 use std::fmt::Display;
 
+// TODO: Github action to test on push
+// TODO: List completed todos
+// TODO: Validate title is alphanumeric
+// TODO: Maybe replace completed bool with a state-machine
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, thiserror::Error)]
@@ -176,7 +181,7 @@ mod todo_tests {
 }
 
 #[cfg(test)]
-mod json_data {
+mod json_data_tests {
     use super::*;
 
     #[test]
