@@ -2,7 +2,7 @@ use std::io;
 
 use crate::{
     models::{JsonDataError, TodoError},
-    store::{JsonStore, JsonStoreError},
+    store::{DataStore, JsonStore, JsonStoreError},
 };
 
 #[derive(Debug, thiserror::Error)]

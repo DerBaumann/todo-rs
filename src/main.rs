@@ -4,7 +4,7 @@ use clap::Parser;
 use todo_rs::{
     app::App,
     cli::{Cli, Command},
-    store::JsonStore,
+    store::{DataStore, JsonStore},
 };
 
 fn main() -> anyhow::Result<()> {
