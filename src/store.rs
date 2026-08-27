@@ -1,5 +1,8 @@
 use std::{fs, io, path::PathBuf};
 
+#[cfg(test)]
+use mockall::{automock, predicate::*};
+
 use crate::models::TodoList;
 
 #[derive(Debug, thiserror::Error)]
@@ -11,7 +14,7 @@ pub enum JsonStoreError {
     JsonError(#[from] serde_json::Error),
 }
 
-#[mockall::automock(type Data=TodoList; type Error=JsonStoreError;)]
+#[cfg_attr(test, automock(type Data=TodoList; type Error=JsonStoreError;))]
 pub trait DataStore {
     type Data;
     type Error;

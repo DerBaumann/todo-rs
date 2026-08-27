@@ -1,7 +1,5 @@
 use std::io::{self, Write};
 
-// TODO: Keep mocking code in tests
-
 use crate::{
     models::{TodoError, TodoList, TodoListError},
     store::{DataStore, JsonStoreError},
