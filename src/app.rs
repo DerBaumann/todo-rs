@@ -122,7 +122,6 @@ mod app_tests {
         Ok(())
     }
 
-    // TODO: Make string representation in tests better
     #[test]
     fn list_nonempty_store() -> anyhow::Result<()> {
         let mut mock_store = MockDataStore::new();
@@ -137,7 +136,7 @@ mod app_tests {
 
         app.list()?;
 
-        assert_eq!(app.writer, b"1 [ ] test\n2 [x] test 2\n");
+        assert_eq!(String::from_utf8(app.writer)?, "1 [ ] test\n2 [x] test 2\n");
 
         Ok(())
     }
