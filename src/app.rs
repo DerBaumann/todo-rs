@@ -1,7 +1,7 @@
 use std::io::{self, Write};
 
 use crate::{
-    models::{JsonData, JsonDataError, TodoError},
+    models::{TodoError, TodoList, TodoListError},
     store::{DataStore, JsonStoreError},
 };
 
@@ -14,7 +14,7 @@ pub enum AppError {
     #[error(transparent)]
     TodoError(#[from] TodoError),
     #[error(transparent)]
-    JsonDataError(#[from] JsonDataError),
+    JsonDataError(#[from] TodoListError),
     #[error(transparent)]
     IOError(#[from] io::Error),
 }
@@ -28,7 +28,7 @@ pub struct App<S, W> {
 
 impl<S, W> App<S, W>
 where
-    S: DataStore<Data = JsonData, Error = JsonStoreError>,
+    S: DataStore<Data = TodoList, Error = JsonStoreError>,
     W: Write,
 {
     pub fn new(store: S, writer: W) -> Self {

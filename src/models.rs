@@ -42,7 +42,7 @@ impl Display for Todo {
 }
 
 #[derive(Debug, PartialEq, thiserror::Error)]
-pub enum JsonDataError {
+pub enum TodoListError {
     #[error("todo does not exist")]
     TodoNotFound(u32),
     #[error(transparent)]
@@ -50,11 +50,11 @@ pub enum JsonDataError {
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
-pub struct JsonData {
+pub struct TodoList {
     pub todos: Vec<Todo>,
 }
 
-impl JsonData {
+impl TodoList {
     pub fn find_todo_by_id(&self, id: u32) -> Option<&Todo> {
         self.todos.iter().find(|t| t.id == id)
     }
@@ -84,12 +84,12 @@ impl JsonData {
         id: u32,
         title: Option<String>,
         completed: Option<bool>,
-    ) -> Result<&Todo, JsonDataError> {
+    ) -> Result<&Todo, TodoListError> {
         let todo = self
             .todos
             .iter_mut()
             .find(|t| t.id == id)
-            .ok_or(JsonDataError::TodoNotFound(id))?;
+            .ok_or(TodoListError::TodoNotFound(id))?;
 
         *todo = Todo::try_new(
             id,
@@ -184,7 +184,7 @@ mod json_data_tests {
 
     #[test]
     fn add_todo_auto_increments_id() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
 
         let first = data.add_todo("first".to_string())?;
         assert_eq!(first.id, 1);
@@ -201,7 +201,7 @@ mod json_data_tests {
 
     #[test]
     fn find_todo_by_id_found() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
 
         data.add_todo("Buy milk".to_string())?;
         data.add_todo("Walk dog".to_string())?;
@@ -219,20 +219,20 @@ mod json_data_tests {
 
     #[test]
     fn find_todo_by_id_not_found() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
 
         data.add_todo("Buy milk".to_string())?;
         data.add_todo("Walk dog".to_string())?;
 
         assert_eq!(data.find_todo_by_id(999), None);
-        assert_eq!(JsonData::default().find_todo_by_id(1), None);
+        assert_eq!(TodoList::default().find_todo_by_id(1), None);
 
         Ok(())
     }
 
     #[test]
     fn complete_existing_todo() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
 
         let id = data.add_todo("Cook lunch".to_string())?.id;
 
@@ -249,14 +249,14 @@ mod json_data_tests {
 
     #[test]
     fn complete_nonexisting_todo() {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
 
         assert_eq!(data.complete_todo(420), None);
     }
 
     #[test]
     fn delete_existing_todo() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         data.add_todo("Cook lunch".to_string())?;
         let id = data.add_todo("Write tests".to_string())?.id;
 
@@ -274,7 +274,7 @@ mod json_data_tests {
 
     #[test]
     fn delete_nonexisting_todo() {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         assert_eq!(data.todos.len(), 0);
         assert_eq!(data.delete_todo(420), None);
         assert_eq!(data.todos.len(), 0);
@@ -282,7 +282,7 @@ mod json_data_tests {
 
     #[test]
     fn edit_todo_updates_title() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         let id = data.add_todo("Old title".to_string())?.id;
 
         let todo = data.edit_todo(id, Some("New title".to_string()), None)?;
@@ -296,7 +296,7 @@ mod json_data_tests {
 
     #[test]
     fn edit_todo_updates_completed_status() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         let id = data.add_todo("Do something".to_string())?.id;
 
         let todo = data.edit_todo(id, None, Some(true))?;
@@ -309,7 +309,7 @@ mod json_data_tests {
 
     #[test]
     fn edit_todo_updates_title_and_completed_status() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         let id = data.add_todo("Old title".to_string())?.id;
 
         let todo = data.edit_todo(id, Some("New title".to_string()), Some(true))?;
@@ -328,7 +328,7 @@ mod json_data_tests {
 
     #[test]
     fn edit_todo_with_none_keeps_existing_values() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         let id = data.add_todo("Keep this".to_string())?.id;
         data.complete_todo(id);
 
@@ -348,7 +348,7 @@ mod json_data_tests {
 
     #[test]
     fn edit_todo_can_uncomplete_todo() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         let id = data.add_todo("Do something".to_string())?.id;
         data.complete_todo(id);
 
@@ -361,7 +361,7 @@ mod json_data_tests {
 
     #[test]
     fn edit_todo_nonexisting_todo_returns_not_found() {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
 
         assert_eq!(
             data.edit_todo(420, Some("New title".to_string()), Some(true))
@@ -373,22 +373,22 @@ mod json_data_tests {
 
     #[test]
     fn edit_todo_nonexisting_todo_returns_correct_id() {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
 
         assert!(matches!(
             data.edit_todo(420, None, None),
-            Err(JsonDataError::TodoNotFound(420))
+            Err(TodoListError::TodoNotFound(420))
         ));
     }
 
     #[test]
     fn edit_todo_rejects_invalid_title() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         let id = data.add_todo("Valid title".to_string())?.id;
 
         assert_eq!(
             data.edit_todo(id, Some("bad".to_string()), None),
-            Err(JsonDataError::TodoError(TodoError::TitleInvalidLength(3)))
+            Err(TodoListError::TodoError(TodoError::TitleInvalidLength(3)))
         );
 
         Ok(())
@@ -396,12 +396,12 @@ mod json_data_tests {
 
     #[test]
     fn edit_todo_rejects_empty_title() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         let id = data.add_todo("Valid title".to_string())?.id;
 
         assert_eq!(
             data.edit_todo(id, Some("".to_string()), None),
-            Err(JsonDataError::TodoError(TodoError::TitleInvalidLength(0)))
+            Err(TodoListError::TodoError(TodoError::TitleInvalidLength(0)))
         );
 
         Ok(())
@@ -409,13 +409,13 @@ mod json_data_tests {
 
     #[test]
     fn edit_todo_rejects_title_over_200_chars() -> anyhow::Result<()> {
-        let mut data = JsonData::default();
+        let mut data = TodoList::default();
         let id = data.add_todo("Valid title".to_string())?.id;
         let title = "a".repeat(201);
 
         assert_eq!(
             data.edit_todo(id, Some(title), None),
-            Err(JsonDataError::TodoError(TodoError::TitleInvalidLength(201)))
+            Err(TodoListError::TodoError(TodoError::TitleInvalidLength(201)))
         );
 
         Ok(())

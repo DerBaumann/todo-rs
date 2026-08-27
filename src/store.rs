@@ -1,6 +1,6 @@
 use std::{fs, io, path::PathBuf};
 
-use crate::models::JsonData;
+use crate::models::TodoList;
 
 #[derive(Debug, thiserror::Error)]
 pub enum JsonStoreError {
@@ -11,7 +11,7 @@ pub enum JsonStoreError {
     JsonError(#[from] serde_json::Error),
 }
 
-#[mockall::automock(type Data=JsonData; type Error=JsonStoreError;)]
+#[mockall::automock(type Data=TodoList; type Error=JsonStoreError;)]
 pub trait DataStore {
     type Data;
     type Error;
@@ -27,11 +27,11 @@ pub trait DataStore {
 
 pub struct JsonStore {
     pub store_path: PathBuf,
-    pub data: JsonData,
+    pub data: TodoList,
 }
 
 impl DataStore for JsonStore {
-    type Data = JsonData;
+    type Data = TodoList;
     type Error = JsonStoreError;
 
     fn data(&self) -> &Self::Data {
@@ -48,7 +48,7 @@ impl DataStore for JsonStore {
     {
         let contents = fs::read_to_string(&path).or_else(|e| match e.kind() {
             std::io::ErrorKind::NotFound => {
-                let empty = JsonData::default();
+                let empty = TodoList::default();
                 let json = serde_json::to_string_pretty(&empty)?;
                 fs::write(&path, &json)?;
                 Ok(json)
@@ -58,7 +58,7 @@ impl DataStore for JsonStore {
 
         Ok(Self {
             store_path: path,
-            data: serde_json::from_str::<JsonData>(&contents)?,
+            data: serde_json::from_str::<TodoList>(&contents)?,
         })
     }
 
