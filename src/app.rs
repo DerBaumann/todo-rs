@@ -1,5 +1,7 @@
 use std::io::{self, Write};
 
+// TODO: Keep mocking code in tests
+
 use crate::{
     models::{TodoError, TodoList, TodoListError},
     store::{DataStore, JsonStoreError},
@@ -100,6 +102,45 @@ where
 }
 
 #[cfg(test)]
-mod tests {
-    // TODO: Tests
+mod app_tests {
+    use crate::{models::Todo, store::MockDataStore};
+
+    use super::*;
+
+    #[test]
+    fn list_empty_store() -> anyhow::Result<()> {
+        let mut mock_store = MockDataStore::new();
+        mock_store
+            .expect_data()
+            .times(1)
+            .return_const(TodoList { todos: Vec::new() });
+
+        let mut app = App::new(mock_store, Vec::new());
+
+        app.list()?;
+
+        assert!(app.writer.is_empty());
+
+        Ok(())
+    }
+
+    // TODO: Make string representation in tests better
+    #[test]
+    fn list_nonempty_store() -> anyhow::Result<()> {
+        let mut mock_store = MockDataStore::new();
+        mock_store.expect_data().times(1).return_const(TodoList {
+            todos: vec![
+                Todo::try_new(1, "test".to_string(), false)?,
+                Todo::try_new(2, "test 2".to_string(), true)?,
+            ],
+        });
+
+        let mut app = App::new(mock_store, Vec::new());
+
+        app.list()?;
+
+        assert_eq!(app.writer, b"1 [ ] test\n2 [x] test 2\n");
+
+        Ok(())
+    }
 }
