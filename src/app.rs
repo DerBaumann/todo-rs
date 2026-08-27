@@ -7,10 +7,11 @@ use crate::{
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
-    #[error(transparent)]
-    JsonStoreError(#[from] JsonStoreError),
+    // TODO: Remove this
     #[error("todo not found")]
     TodoNotFound,
+    #[error(transparent)]
+    JsonStoreError(#[from] JsonStoreError),
     #[error(transparent)]
     TodoError(#[from] TodoError),
     #[error(transparent)]
@@ -137,6 +138,37 @@ mod app_tests {
         app.list()?;
 
         assert_eq!(String::from_utf8(app.writer)?, "1 [ ] test\n2 [x] test 2\n");
+
+        Ok(())
+    }
+
+    #[test]
+    fn get_existing_todo() -> anyhow::Result<()> {
+        let mut mock_store = MockDataStore::new();
+        mock_store.expect_data().times(1).return_const(TodoList {
+            todos: vec![Todo::try_new(1, "test".to_string(), false)?],
+        });
+
+        let mut app = App::new(mock_store, Vec::new());
+
+        app.get(1)?;
+
+        assert_eq!(String::from_utf8(app.writer)?, "1 [ ] test\n");
+
+        Ok(())
+    }
+
+    #[test]
+    fn get_nonexisting_todo() -> anyhow::Result<()> {
+        let mut mock_store = MockDataStore::new();
+        mock_store
+            .expect_data()
+            .times(1)
+            .return_const(TodoList { todos: Vec::new() });
+
+        let mut app = App::new(mock_store, Vec::new());
+
+        assert!(matches!(app.get(420), Err(AppError::TodoNotFound)));
 
         Ok(())
     }
