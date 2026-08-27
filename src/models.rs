@@ -1,6 +1,5 @@
 use std::fmt::Display;
 
-// TODO: Github action to test on push
 // TODO: List completed todos
 // TODO: Validate title is alphanumeric
 // TODO: Maybe replace completed bool with a state-machine
@@ -141,8 +140,7 @@ mod todo_tests {
         // Empty title (0 chars)
         assert_eq!(
             Todo::try_new(1, "".to_string(), false),
-            // Length should be 0
-            Err(TodoError::TitleInvalidLength(10))
+            Err(TodoError::TitleInvalidLength(0))
         );
 
         // Just below lower boundary (3 chars)
