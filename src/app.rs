@@ -100,6 +100,7 @@ where
     }
 }
 
+// TODO: Test App::{add, edit, complete, delete}
 #[cfg(test)]
 mod app_tests {
     use crate::{models::Todo, store::MockDataStore};
