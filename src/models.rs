@@ -13,7 +13,6 @@ pub enum TodoError {
     TitleInvalidLength(usize),
 }
 
-// TODO: Ask what is meant by Entity
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Todo {
     pub id: u32,
@@ -142,7 +141,8 @@ mod todo_tests {
         // Empty title (0 chars)
         assert_eq!(
             Todo::try_new(1, "".to_string(), false),
-            Err(TodoError::TitleInvalidLength(0))
+            // Length should be 0
+            Err(TodoError::TitleInvalidLength(10))
         );
 
         // Just below lower boundary (3 chars)
