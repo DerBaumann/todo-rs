@@ -100,7 +100,6 @@ where
     }
 }
 
-// TODO: Test App::delete
 #[cfg(test)]
 mod app_tests {
     use crate::{models::Todo, store::MockDataStore};
@@ -256,6 +255,47 @@ mod app_tests {
         let mut app = App::new(mock_store, Vec::new());
 
         assert!(matches!(app.complete(420), Err(AppError::TodoNotFound)));
+
+        Ok(())
+    }
+
+    #[test]
+    fn delete_todo() -> anyhow::Result<()> {
+        let mut mock_store = MockDataStore::new();
+        mock_store
+            .expect_data_mut()
+            .times(1)
+            .returning(|| TodoList {
+                todos: vec![
+                    Todo::try_new(1, "test".to_string(), false).expect("Todo should be valid"),
+                ],
+            });
+
+        mock_store.expect_write().times(1).returning(|| Ok(()));
+
+        let mut app = App::new(mock_store, Vec::new());
+
+        app.delete(1)?;
+
+        assert_eq!(
+            String::from_utf8(app.writer)?,
+            "Todo deleted successfully!\n"
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn delete_nonexisting_todo() -> anyhow::Result<()> {
+        let mut mock_store = MockDataStore::new();
+        mock_store
+            .expect_data_mut()
+            .times(1)
+            .returning(|| TodoList { todos: Vec::new() });
+
+        let mut app = App::new(mock_store, Vec::new());
+
+        assert!(matches!(app.delete(420), Err(AppError::TodoNotFound)));
 
         Ok(())
     }
