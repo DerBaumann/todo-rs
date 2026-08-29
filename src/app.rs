@@ -192,4 +192,30 @@ mod app_tests {
 
         Ok(())
     }
+
+    #[test]
+    fn edit_todo() -> anyhow::Result<()> {
+        let mut mock_store = MockDataStore::new();
+        mock_store
+            .expect_data_mut()
+            .times(1)
+            .returning(|| TodoList {
+                todos: vec![
+                    Todo::try_new(1, "test".to_string(), false).expect("Todo should be valid"),
+                ],
+            });
+
+        mock_store.expect_write().times(1).returning(|| Ok(()));
+
+        let mut app = App::new(mock_store, Vec::new());
+
+        app.edit(1, Some("edited todo".to_string()), None)?;
+
+        assert_eq!(
+            String::from_utf8(app.writer)?,
+            "Todo updated successfully!\n"
+        );
+
+        Ok(())
+    }
 }
