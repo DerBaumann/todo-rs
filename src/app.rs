@@ -173,4 +173,23 @@ mod app_tests {
 
         Ok(())
     }
+
+    #[test]
+    fn add_todo() -> anyhow::Result<()> {
+        let mut mock_store = MockDataStore::new();
+        mock_store
+            .expect_data_mut()
+            .times(1)
+            .returning(|| TodoList { todos: Vec::new() });
+
+        mock_store.expect_write().times(1).returning(|| Ok(()));
+
+        let mut app = App::new(mock_store, Vec::new());
+
+        app.add("Test Todo".to_string())?;
+
+        assert_eq!(String::from_utf8(app.writer)?, "Saved todo: Test Todo!\n");
+
+        Ok(())
+    }
 }
