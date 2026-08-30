@@ -134,10 +134,6 @@ mod todo_tests {
                 completed: true,
             })
         );
-
-        // Unicode character count check (4 multi-byte characters)
-        let unicode_todo = Todo::try_new(3, "🦀🦀🦀🦀".to_string(), false);
-        assert!(unicode_todo.is_ok());
     }
 
     #[test]
@@ -159,6 +155,34 @@ mod todo_tests {
         assert_eq!(
             Todo::try_new(3, too_long_title, false),
             Err(TodoError::TitleInvalidLength(201))
+        );
+    }
+
+    #[test]
+    fn try_new_invalid_pattern() {
+        let emoji_todo = Todo::try_new(1, "🦀🦀🦀🦀".to_string(), false);
+        assert_eq!(
+            emoji_todo,
+            Err(TodoError::TitleNotAlphanumeric("🦀🦀🦀🦀".to_string()))
+        );
+
+        let todo_with_newline = Todo::try_new(2, "abc\ndef".to_string(), false);
+        assert_eq!(
+            todo_with_newline,
+            Err(TodoError::TitleNotAlphanumeric("abc\ndef".to_string()))
+        );
+    }
+
+    #[test]
+    fn try_new_valid_pattern() {
+        let valid_todo = Todo::try_new(1, "Hello, World123!?-.,#+*/&%$".to_string(), false);
+        assert_eq!(
+            valid_todo,
+            Ok(Todo {
+                id: 1,
+                title: "Hello, World123!?-.,#+*/&%$".to_string(),
+                completed: false
+            })
         );
     }
 
