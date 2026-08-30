@@ -1,6 +1,5 @@
 use std::fmt::Display;
 
-// TODO: List completed todos
 // TODO: Maybe replace completed bool with a state-machine
 
 use regex::regex;
