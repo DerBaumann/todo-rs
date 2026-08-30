@@ -216,12 +216,37 @@ mod todo_list_tests {
 
     #[test]
     fn find_completed_todos() -> anyhow::Result<()> {
-        todo!()
+        let mut data = TodoList::default();
+
+        data.add_todo("Test 1".to_string())?;
+        data.add_todo("Test 2".to_string())?;
+        data.add_todo("Test 3".to_string())?;
+
+        data.complete_todo(2).unwrap();
+
+        let completed = data.find_completed_todos();
+
+        assert!(completed.contains(&&Todo {
+            id: 2,
+            title: "Test 2".to_string(),
+            completed: true
+        }));
+
+        assert_eq!(completed.len(), 1);
+
+        Ok(())
     }
 
     #[test]
     fn find_completed_todos_only_uncompleted() -> anyhow::Result<()> {
-        todo!()
+        let mut data = TodoList::default();
+
+        data.add_todo("Test 1".to_string())?;
+        data.add_todo("Test 2".to_string())?;
+
+        assert_eq!(data.find_completed_todos().len(), 0);
+
+        Ok(())
     }
 
     #[test]
