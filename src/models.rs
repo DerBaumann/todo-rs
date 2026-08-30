@@ -211,8 +211,18 @@ mod todo_tests {
 }
 
 #[cfg(test)]
-mod json_data_tests {
+mod todo_list_tests {
     use super::*;
+
+    #[test]
+    fn find_completed_todos() -> anyhow::Result<()> {
+        todo!()
+    }
+
+    #[test]
+    fn find_completed_todos_only_uncompleted() -> anyhow::Result<()> {
+        todo!()
+    }
 
     #[test]
     fn add_todo_auto_increments_id() -> anyhow::Result<()> {
