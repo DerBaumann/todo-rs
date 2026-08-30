@@ -60,7 +60,7 @@ pub struct TodoList {
 
 impl TodoList {
     pub fn find_completed_todos(&self) -> Vec<&Todo> {
-        todo!()
+        self.todos.iter().filter(|t| t.completed).collect()
     }
 
     pub fn find_todo_by_id(&self, id: u32) -> Option<&Todo> {
