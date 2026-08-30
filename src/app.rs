@@ -44,6 +44,10 @@ where
         Ok(())
     }
 
+    pub fn list_completed(&mut self) -> Result<()> {
+        todo!()
+    }
+
     pub fn get(&mut self, id: u32) -> Result<()> {
         let todo = self
             .store

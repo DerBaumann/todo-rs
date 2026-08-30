@@ -14,6 +14,7 @@ fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Command::List => app.list()?,
+        Command::ListCompleted => app.list_completed()?,
         Command::Get { id } => app.get(id)?,
         Command::Add { title } => app.add(title)?,
         Command::Edit {

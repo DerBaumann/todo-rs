@@ -12,6 +12,7 @@ pub struct Cli {
 #[derive(clap::Subcommand, Clone)]
 pub enum Command {
     List,
+    ListCompleted,
     Get {
         id: u32,
     },
