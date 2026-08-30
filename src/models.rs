@@ -1,7 +1,6 @@
 use std::fmt::Display;
 
 // TODO: List completed todos
-// TODO: Validate title is alphanumeric
 // TODO: Maybe replace completed bool with a state-machine
 
 use regex::regex;
