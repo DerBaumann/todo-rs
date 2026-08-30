@@ -59,6 +59,10 @@ pub struct TodoList {
 }
 
 impl TodoList {
+    pub fn find_completed_todos(&self) -> Vec<&Todo> {
+        todo!()
+    }
+
     pub fn find_todo_by_id(&self, id: u32) -> Option<&Todo> {
         self.todos.iter().find(|t| t.id == id)
     }
