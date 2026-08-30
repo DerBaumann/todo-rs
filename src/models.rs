@@ -4,12 +4,15 @@ use std::fmt::Display;
 // TODO: Validate title is alphanumeric
 // TODO: Maybe replace completed bool with a state-machine
 
+use regex::regex;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, thiserror::Error)]
 pub enum TodoError {
     #[error("title must be between 4 and 200 characters long")]
     TitleInvalidLength(usize),
+    #[error("title must only consist of alphanumeric characters, spaces and punctuation")]
+    TitleNotAlphanumeric(String),
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -24,6 +27,8 @@ impl Todo {
         let title_char_count = title.chars().count();
         if !(4..=200).contains(&title_char_count) {
             Err(TodoError::TitleInvalidLength(title_char_count))
+        } else if !regex!(r"^[a-zA-Z0-9[[:blank:]][[:punct:]]]+$").is_match(&title) {
+            Err(TodoError::TitleNotAlphanumeric(title))
         } else {
             Ok(Self {
                 id,

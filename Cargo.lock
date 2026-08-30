@@ -573,6 +573,7 @@ dependencies = [
  "clap",
  "mockall",
  "predicates",
+ "regex",
  "serde",
  "serde_json",
  "thiserror",
