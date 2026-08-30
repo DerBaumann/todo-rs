@@ -45,7 +45,11 @@ where
     }
 
     pub fn list_completed(&mut self) -> Result<()> {
-        todo!()
+        for todo in &self.store.data().find_completed_todos() {
+            writeln!(self.writer, "{todo}")?;
+        }
+
+        Ok(())
     }
 
     pub fn get(&mut self, id: u32) -> Result<()> {
